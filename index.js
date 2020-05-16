@@ -2,6 +2,10 @@ const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars');
 
+const homeRoutes = require('./routes/home');
+const coursesRoutes = require('./routes/courses');
+const addCourseRoutes = require('./routes/add-course');
+
 const app = express();
 
 app.use(express.static('public'));
@@ -19,35 +23,9 @@ app.set('views', 'views');
 
 //routes
 
-app.get('/', (req, res) => {
-  res.render(
-    'index',
-    {
-      title: 'Home',
-      isHome: true,
-    }
-  );
-});
-
-app.get('/courses', (req, res) => {
-  res.render(
-    'courses',
-    {
-      title: 'Courses',
-      isCourses: true,
-    }
-  );
-});
-
-app.get('/add-course', (req, res) => {
-  res.render(
-    'add-course',
-    {
-      title: 'Add course',
-      isAdd: true,
-    }
-  );
-});
+app.use('/', homeRoutes);
+app.use('/courses', coursesRoutes);
+app.use('/add-course', addCourseRoutes);
 
 //server
 
