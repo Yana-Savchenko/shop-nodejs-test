@@ -3,7 +3,7 @@ const path = require('path');
 const exphbs = require('express-handlebars');
 
 const homeRoutes = require('./routes/home');
-const cardRoutes = require('./routes/card');
+const cartRoutes = require('./routes/cart');
 const coursesRoutes = require('./routes/courses');
 const addCourseRoutes = require('./routes/add-course');
 
@@ -27,7 +27,7 @@ app.use(express.urlencoded({extended: true}))
 app.use('/', homeRoutes);
 app.use('/courses', coursesRoutes);
 app.use('/add-course', addCourseRoutes);
-app.use('/card', cardRoutes);
+app.use('/cart', cartRoutes);
 
 //server
 

@@ -1,4 +1,4 @@
-class Card {
+class Cart {
   constructor() {
 
   }
@@ -12,4 +12,4 @@ class Card {
   }
 }
 
-module.exports = Card;
+module.exports = Cart;
