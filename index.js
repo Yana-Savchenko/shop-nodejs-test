@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const Handlebars = require('handlebars');
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -16,11 +18,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Handlebars settings
 
-const hbs = exphbs.create({
+app.engine('hbs', exphbs({
+  handlebars: allowInsecurePrototypeAccess(Handlebars),
   defaultLayout: 'main',
   extname: 'hbs',
-})
-app.engine('hbs', hbs.engine);
+}));
 app.set('view engine', 'hbs');
 app.set('views', 'views');
 
@@ -40,9 +42,9 @@ app.use('/cart', cartRoutes);
 async function start() {
   try {
     const PORT = process.env.PORT || 3000;
-    const url = `mongodb+srv://${process.env.NAME}:${process.env.PASSWORD}@cluster0-qa9lw.mongodb.net/test?retryWrites=true&w=majority`;
+    const url = `mongodb+srv://${process.env.NAME}:${process.env.PASSWORD}@cluster0-qa9lw.mongodb.net/${process.env.DB_NAME}`;
 
-    await mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
+    await mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     })
