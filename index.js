@@ -9,7 +9,7 @@ const addCourseRoutes = require('./routes/add-course');
 
 const app = express();
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Handlebars settings
 
@@ -21,7 +21,10 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', 'views');
 
+//Parse request
+
 app.use(express.urlencoded({extended: true}))
+
 //routes
 
 app.use('/', homeRoutes);

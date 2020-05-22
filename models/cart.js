@@ -26,7 +26,7 @@ class Cart {
     const cart = await Cart.fetch();
 
     const index = cart.courses.findIndex(c => c.id === course.id);
-    
+
     const addedCourse = cart.courses[index];
 
     if (addedCourse) {
@@ -49,6 +49,33 @@ class Cart {
       })
     })
   }
+
+  static async remove(id) {
+    const cart = await Cart.fetch();
+
+    const index = cart.courses.findIndex(c => c.id === id);
+    const course = cart.courses[index];
+
+    if (course.count === 1) {
+      cart.courses = cart.courses.filter(course => course.id !== id);
+    } else {
+      cart.courses[index].count--;
+    }
+
+    cart.price -= +course.price;
+
+    return new Promise((res, rej) => {
+      fs.writeFile(pathAbs, JSON.stringify(cart), err => {
+        if (err) {
+          rej(err);
+        } else {
+          res(cart);
+        }
+      })
+    })
+  }
+
 }
+
 
 module.exports = Cart;
