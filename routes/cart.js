@@ -1,27 +1,27 @@
 const Router = require('express');
 
 const Course = require('../models/course');
-const Cart = require('../models/cart');
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const { courses, price } = await Cart.fetch();
+  // const { courses, price } = await Cart.fetch();
 
-  res.render('cart',
-    {
-      isCart: true,
-      title: 'Cart',
-      courses,
-      price,
-    }
-  )
+  // res.render('cart',
+  //   {
+  //     isCart: true,
+  //     title: 'Cart',
+  //     courses,
+  //     price,
+  //   }
+  // )
+  res.json({ test: true });
 })
 
 router.post('/add', async (req, res) => {
-  const course = await Course.getById(req.body.id);
+  const course = await Course.findById(req.body.id);
 
-  await Cart.addCourse(course);
+  await req.user.addToCart(course);
 
   res.redirect('/cart');
 })
