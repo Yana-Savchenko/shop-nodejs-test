@@ -50,4 +50,14 @@ router.post('/edit', async (req, res) => {
   res.redirect('/courses');
 })
 
+router.post('/remove', async (req, res) => {
+  const { id } = req.body;
+  try {
+    await Course.deleteOne({ _id: id });
+    res.redirect('/courses');
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 module.exports = router; 
