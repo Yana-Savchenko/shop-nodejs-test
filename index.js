@@ -10,6 +10,7 @@ const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
 const coursesRoutes = require('./routes/courses');
 const addCourseRoutes = require('./routes/add-course');
+const ordersRoutes = require('./routes/orders');
 const User = require('./models/user');
 
 dotenv.config();
@@ -29,7 +30,7 @@ app.set('views', 'views');
 // Add temp user to req
 app.use(async (req, res, next) => {
   try {
-    const user = await User.findById('5eca6df831e0552540b64445');
+    const user = await User.findById('5ecaa6cc6c3fc64666032e13');
     req.user = user;
     next();
   } catch (err) {
@@ -45,6 +46,7 @@ app.use('/', homeRoutes);
 app.use('/courses', coursesRoutes);
 app.use('/add-course', addCourseRoutes);
 app.use('/cart', cartRoutes);
+app.use('/orders', ordersRoutes);
 
 //start server and connect to DB
 async function start() {
