@@ -9,7 +9,6 @@ router.get('/', async (req, res) => {
     let orders = await Order.find({ 'user.userId': req.user.id })
       .populate('user.userId')
 
-    console.log('orders: ', orders);
     orders = orders.map(order => {
       return {
         ...order._doc,
