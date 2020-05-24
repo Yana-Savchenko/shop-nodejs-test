@@ -29,7 +29,7 @@ app.set('views', 'views');
 // Add temp user to req
 app.use(async (req, res, next) => {
   try {
-    const user = await User.findById('5ec984fc0a75f426a3cd3c2e');
+    const user = await User.findById('5eca6df831e0552540b64445');
     req.user = user;
     next();
   } catch (err) {
