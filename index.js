@@ -16,6 +16,7 @@ const ordersRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
 const User = require('./models/user');
 const varMiddleware = require('./middleware/variables');
+const userMiddleware = require('./middleware/user');
 
 dotenv.config();
 const app = express();
@@ -35,6 +36,7 @@ app.use(session({
   store,
 }));
 app.use(varMiddleware);
+app.use(userMiddleware);
 
 
 // Handlebars settings
