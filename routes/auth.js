@@ -18,16 +18,53 @@ router.get('/logout', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  const user = await User.findById('5ecaa6cc6c3fc64666032e13');
+  try {
+    const { email, password } = req.body;
 
-  req.session.user = user;
-  req.session.isAuth = true;
+    const user = await User.findOne({ email });
 
-  req.session.save(err => {
-    if (err) { throw err }
+    if (user) {
+      const isValidPass = password === user.password;
+      if (isValidPass) {
+        req.session.user = user;
+        req.session.isAuth = true;
 
-    res.redirect('/');
-  })
+        req.session.save(err => {
+          if (err) { throw err }
+
+          res.redirect('/');
+        })
+      } else {
+        res.redirect('/auth/login');
+      }
+    } else {
+      res.redirect('/auth/login');
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+router.post('/register', async (req, res) => {
+  try {
+    const { email, password, repeat, name } = req.body;
+
+    const candidate = await User.findOne({ email });
+
+    if (candidate) {
+      res.redirect('/auth/login#register')
+    } else {
+      const user = new User({
+        email, name, password, cart: { items: [] }
+      });
+      await user.save();
+      res.redirect('/auth/login');
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
 })
 
 module.exports = router;
