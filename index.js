@@ -11,6 +11,7 @@ const cartRoutes = require('./routes/cart');
 const coursesRoutes = require('./routes/courses');
 const addCourseRoutes = require('./routes/add-course');
 const ordersRoutes = require('./routes/orders');
+const authRoutes = require('./routes/auth');
 const User = require('./models/user');
 
 dotenv.config();
@@ -47,6 +48,7 @@ app.use('/courses', coursesRoutes);
 app.use('/add-course', addCourseRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', ordersRoutes);
+app.use('/auth', authRoutes);
 
 //start server and connect to DB
 async function start() {
