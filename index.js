@@ -6,6 +6,7 @@ const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const session = require('express-session');
+const MongoStore = require('connect-mongodb-session')(session);
 
 const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
@@ -18,6 +19,11 @@ const varMiddleware = require('./middleware/variables');
 
 dotenv.config();
 const app = express();
+const mongoDB_url = `mongodb+srv://${process.env.NAME}:${process.env.PASSWORD}@cluster0-qa9lw.mongodb.net/${process.env.DB_NAME}`;
+const store = new MongoStore({
+  collection: 'sessions',
+  uri: mongoDB_url,
+});
 
 //App settings
 app.use(express.static(path.join(__dirname, 'public')));
@@ -26,6 +32,7 @@ app.use(session({
   secret: 'secret string',
   resave: false,
   saveUninitialized: false,
+  store,
 }));
 app.use(varMiddleware);
 
@@ -38,17 +45,6 @@ app.engine('hbs', exphbs({
 }));
 app.set('view engine', 'hbs');
 app.set('views', 'views');
-
-// Add temp user to req
-app.use(async (req, res, next) => {
-  try {
-    const user = await User.findById('5ecaa6cc6c3fc64666032e13');
-    req.user = user;
-    next();
-  } catch (err) {
-    console.log(err);
-  }
-})
 
 
 //routes
@@ -63,20 +59,12 @@ app.use('/auth', authRoutes);
 async function start() {
   try {
     const PORT = process.env.PORT || 3000;
-    const url = `mongodb+srv://${process.env.NAME}:${process.env.PASSWORD}@cluster0-qa9lw.mongodb.net/${process.env.DB_NAME}`;
 
-    await mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
-
-    const candidate = await User.findOne();
-
-    if (!candidate) {
-      const user = new User({
-        email: 'test.mail.ru',
-        name: 'Yana',
-        cart: { items: [] }
-      });
-      await user.save();
-    }
+    await mongoose.connect(mongoDB_url, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useFindAndModify: false
+    });
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
