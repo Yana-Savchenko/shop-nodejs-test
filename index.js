@@ -5,6 +5,7 @@ const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-ac
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const session = require('express-session');
 
 const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
@@ -13,11 +14,21 @@ const addCourseRoutes = require('./routes/add-course');
 const ordersRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
 const User = require('./models/user');
+const varMiddleware = require('./middleware/variables');
 
 dotenv.config();
 const app = express();
 
+//App settings
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }))
+app.use(session({
+  secret: 'secret string',
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(varMiddleware);
+
 
 // Handlebars settings
 app.engine('hbs', exphbs({
@@ -39,8 +50,6 @@ app.use(async (req, res, next) => {
   }
 })
 
-//Parse request
-app.use(express.urlencoded({ extended: true }))
 
 //routes
 app.use('/', homeRoutes);
