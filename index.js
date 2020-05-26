@@ -14,7 +14,6 @@ const coursesRoutes = require('./routes/courses');
 const addCourseRoutes = require('./routes/add-course');
 const ordersRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
-const User = require('./models/user');
 const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
 
