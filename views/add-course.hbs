@@ -2,7 +2,7 @@
 
 <form action="/add-course" method="POST">
   <div class="input-field col s6">
-    <input id="title"  name="title" type="text" class="validate" required>
+    <input id="title" name="title" type="text" class="validate" required>
     <label class="active" for="title">Course name</label>
     <span class="helper-text" data-error="Enter course name"></span>
   </div>
@@ -12,9 +12,12 @@
     <span class="helper-text" data-error="Enter price"></span>
   </div>
   <div class="input-field col s6">
-    <input id="img" name="img"type="text" class="validate" required>
+    <input id="img" name="img" type="text" class="validate" required>
     <label class="active" for="img">Image URL</label>
     <span class="helper-text" data-error="Enter image URL"></span>
   </div>
+
+  <input type="hidden" name="_csrf" value={{csrf}}>
+
   <button class="btn btn-primary" type="submit">Add course</button>
 </form>

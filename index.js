@@ -5,8 +5,10 @@ const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-ac
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const csrf = require('csurf');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
+const cors = require('cors');
 
 const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
@@ -25,15 +27,18 @@ const store = new MongoStore({
   uri: mongoDB_url,
 });
 
+
 //App settings
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'secret string',
   resave: false,
   saveUninitialized: false,
   store,
 }));
+app.use(csrf());
 app.use(varMiddleware);
 app.use(userMiddleware);
 
