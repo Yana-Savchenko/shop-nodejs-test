@@ -36,8 +36,6 @@ if ($cart) {
     if (event.target.classList.contains('js-remove')) {
       const id = event.target.dataset.id;
       const csrf = event.target.dataset.csrf;
-      console.log('sfrs', csrf);
-
 
       fetch(`/cart/remove/${id}`, {
         method: 'delete',

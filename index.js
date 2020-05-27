@@ -9,6 +9,7 @@ const csrf = require('csurf');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
+const flash = require('connect-flash');
 
 const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
@@ -39,6 +40,7 @@ app.use(session({
   store,
 }));
 app.use(csrf());
+app.use(flash());
 app.use(varMiddleware);
 app.use(userMiddleware);
 
