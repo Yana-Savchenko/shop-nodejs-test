@@ -5,7 +5,7 @@ module.exports = function (email) {
     subject: 'Invoices due',
     html: `
       <h1>Registration completed successfully</h1>
-      <p>Your login for site is ${email}
+      <p>Your login for site is ${email}</p>
       <hr/>
       <a href="${process.env.BASE_URL}">Let's start</a>
     `

@@ -6,7 +6,7 @@ const crypto = require('crypto');
 
 const User = require('../models/user');
 const regMail = require('../email/register');
-
+const resetPassEmail = require('../email/resetPass');
 const router = Router();
 dotenv.config();
 
@@ -96,18 +96,40 @@ router.post('/register', async (req, res) => {
 
 })
 
-router.get('/reset', (req, res) => {
+router.get('/reset-pass', (req, res) => {
   res.render('auth/reset-pass', {
     title: 'Forgot password',
     resetPassError: req.flash('resetPassError'),
   })
 })
 
-router.post('/reset', async (req, res) => {
+router.post('/reset-pass', async (req, res) => {
+
+  const { email } = { ...req.body };
+
+  console.log('email', email);
+
   try {
-    crypto.randomBytes(32, (err, buffer) => {
-      req.flash('resetPassError', 'Something went wrong, try again later');
-      return res.redirect('/auth/reset');
+    crypto.randomBytes(32, async (err, buffer) => {
+      if (err) {
+        req.flash('resetPassError', 'Something went wrong, try again later');
+        return res.redirect('/auth/reset');
+      }
+      const token = buffer.toString('hex');
+      const user = await User.findOne({ email: email });
+
+      if (user) {
+        user.resetToken = token;
+        user.resetTokenExp = Date.now() + 3600 * 1000;
+        await user.save();
+        const mailOptions = resetPassEmail(email, token);
+        res.redirect('/auth/login');
+        await transporter.sendMail(mailOptions);
+      } else {
+        req.flash('resetPassError', `User ${email} does not exist`);
+        return res.redirect('/auth/reset-pass');
+      }
+
     })
   } catch (err) {
     console.log(err);
