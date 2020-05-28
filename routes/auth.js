@@ -1,9 +1,23 @@
 const { Router } = require('express');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
+const crypto = require('crypto');
 
 const User = require('../models/user');
+const regMail = require('../email/register');
 
 const router = Router();
+dotenv.config();
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  auth: {
+    type: "login",
+    user: 'y.s.13.06.10@gmail.com',
+    pass: process.env.MAIL_PASS
+  }
+});
 
 router.get('/login', async (req, res) => {
   res.render('auth/login', {
@@ -71,6 +85,10 @@ router.post('/register', async (req, res) => {
       });
       await user.save();
       res.redirect('/auth/login');
+
+      const mailOptions = regMail(email);
+
+      await transporter.sendMail(mailOptions);
     }
   } catch (err) {
     console.log(err);
@@ -78,4 +96,21 @@ router.post('/register', async (req, res) => {
 
 })
 
+router.get('/reset', (req, res) => {
+  res.render('auth/reset-pass', {
+    title: 'Forgot password',
+    resetPassError: req.flash('resetPassError'),
+  })
+})
+
+router.post('/reset', async (req, res) => {
+  try {
+    crypto.randomBytes(32, (err, buffer) => {
+      req.flash('resetPassError', 'Something went wrong, try again later');
+      return res.redirect('/auth/reset');
+    })
+  } catch (err) {
+    console.log(err);
+  }
+})
 module.exports = router;
