@@ -107,8 +107,6 @@ router.post('/reset-pass', async (req, res) => {
 
   const { email } = { ...req.body };
 
-  console.log('email', email);
-
   try {
     crypto.randomBytes(32, async (err, buffer) => {
       if (err) {
@@ -135,4 +133,56 @@ router.post('/reset-pass', async (req, res) => {
     console.log(err);
   }
 })
+
+router.get('/reset-pass/:token', async (req, res) => {
+  const { token } = { ...req.params };
+
+  if (!token) {
+    return res.redirect('/auth/login');
+  }
+  try {
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExp: { $gt: Date.now() }
+    })
+
+    if (!user) {
+      return res.redirect('/auth/login');
+    }
+    res.render('auth/set-pass', {
+      title: 'Set new password',
+      resetPassError: req.flash('setPassError'),
+      userId: user._id.toString(),
+      token,
+    })
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+router.post('/set-pass', async (req, res) => {
+  const { token, password } = { ...req.body };
+  try {
+    const user = await User.findOne({
+      _id: req.body.userId,
+      resetToken: token,
+      resetTokenExp: { $gt: Date.now() }
+    });
+
+    if (user) {
+      user.password = await bcrypt.hash(password, +process.env.SALT);
+      user.resetToken = undefined;
+      user.resetTokenExp = undefined;
+
+      await user.save();
+      res.redirect('/auth/login');
+    } else {
+      req.flash('loginError', 'Token expired');
+      res.redirect('/auth/login');
+    }
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 module.exports = router;
