@@ -50,6 +50,7 @@ app.engine('hbs', exphbs({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   defaultLayout: 'main',
   extname: 'hbs',
+  helpers: require('./helpers/hbs-helpers')
 }));
 app.set('view engine', 'hbs');
 app.set('views', 'views');
