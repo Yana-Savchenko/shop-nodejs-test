@@ -10,6 +10,8 @@ const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const flash = require('connect-flash');
+const helmet = require('helmet');
+const compression = require('compression');
 
 dotenv.config();
 const homeRoutes = require('./routes/home');
@@ -46,6 +48,8 @@ app.use(session({
 app.use(fileMiddleware.single('avatar'));
 app.use(csrf());
 app.use(flash());
+app.use(helmet());
+app.use(compression());
 app.use(varMiddleware);
 app.use(userMiddleware);
 
