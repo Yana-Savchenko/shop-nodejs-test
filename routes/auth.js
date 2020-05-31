@@ -3,10 +3,13 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const crypto = require('crypto');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 const regMail = require('../email/register');
 const resetPassEmail = require('../email/resetPass');
+const { regValidators, loginValidators } = require('../helpers/validators');
+
 const router = Router();
 dotenv.config();
 
@@ -34,62 +37,55 @@ router.get('/logout', async (req, res) => {
   })
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginValidators, async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const errors = validationResult(req);
 
-    if (user) {
-      const isValidPass = await bcrypt.compare(password, user.password);
-
-      if (isValidPass) {
-        req.session.user = user;
-        req.session.isAuth = true;
-
-        req.session.save(err => {
-          if (err) { throw err }
-
-          res.redirect('/');
-        })
-      } else {
-        req.flash('loginError', 'Invalid password')
-        res.redirect('/auth/login');
-      }
-
-    } else {
-      req.flash('loginError', `User ${email} does not exist`);
-      res.redirect('/auth/login');
+    if (!errors.isEmpty()) {
+      req.flash('loginError', errors.array()[0].msg);
+      return res.status(422).redirect('/auth/login');
     }
 
-  } catch (err) {
+    const user = await User.findOne({ email });
+
+    req.session.user = user;
+    req.session.isAuth = true;
+
+    req.session.save(err => {
+      if (err) { throw err }
+
+      res.redirect('/');
+    })
+  }
+  catch (err) {
     console.log(err);
   }
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', regValidators, async (req, res) => {
   try {
-    const { email, password, repeat, name } = req.body;
+    const { email, password, name } = req.body;
 
-    const candidate = await User.findOne({ email });
+    const errors = validationResult(req);
 
-    if (candidate) {
-      req.flash('regError', `Email ${email} already in use`);
-      res.redirect('/auth/login#register')
-    } else {
-
-      const hashPassword = await bcrypt.hash(password, +process.env.SALT);
-
-      const user = new User({
-        email, name, password: hashPassword, cart: { items: [] }
-      });
-      await user.save();
-      res.redirect('/auth/login');
-
-      const mailOptions = regMail(email);
-
-      await transporter.sendMail(mailOptions);
+    if (!errors.isEmpty()) {
+      req.flash('regError', errors.array()[0].msg);
+      return res.status(422).redirect('/auth/login#register');
     }
+
+    const hashPassword = await bcrypt.hash(password, +process.env.SALT);
+
+    const user = new User({
+      email, name, password: hashPassword, cart: { items: [] }
+    });
+    await user.save();
+    res.redirect('/auth/login');
+
+    const mailOptions = regMail(email);
+
+    await transporter.sendMail(mailOptions);
   } catch (err) {
     console.log(err);
   }
