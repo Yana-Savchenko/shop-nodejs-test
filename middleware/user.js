@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../schemas/user');
 
 module.exports = async function (req, res, next) {
   if (!req.session.user) {

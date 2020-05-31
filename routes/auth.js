@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 
-const User = require('../models/user');
+const User = require('../schemas/user');
 const regMail = require('../email/register');
 const resetPassEmail = require('../email/resetPass');
 const { regValidators, loginValidators } = require('../helpers/validators');

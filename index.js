@@ -11,6 +11,7 @@ const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const flash = require('connect-flash');
 
+dotenv.config();
 const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
 const coursesRoutes = require('./routes/courses');
@@ -21,8 +22,8 @@ const profileRoutes = require('./routes/profile');
 const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
 const errorHandler = require('./middleware/notFound');
+const fileMiddleware = require('./middleware/uploadFile');
 
-dotenv.config();
 const app = express();
 const mongoDB_url = `mongodb+srv://${process.env.NAME}:${process.env.PASSWORD}@cluster0-qa9lw.mongodb.net/${process.env.DB_NAME}`;
 const store = new MongoStore({
@@ -34,6 +35,7 @@ const store = new MongoStore({
 //App settings
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'secret string',
@@ -41,6 +43,7 @@ app.use(session({
   saveUninitialized: false,
   store,
 }));
+app.use(fileMiddleware.single('avatar'));
 app.use(csrf());
 app.use(flash());
 app.use(varMiddleware);
