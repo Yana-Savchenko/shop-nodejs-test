@@ -17,8 +17,10 @@ const coursesRoutes = require('./routes/courses');
 const addCourseRoutes = require('./routes/add-course');
 const ordersRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
 const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
+const errorHandler = require('./middleware/notFound');
 
 dotenv.config();
 const app = express();
@@ -63,6 +65,9 @@ app.use('/add-course', addCourseRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/auth', authRoutes);
+app.use('/profile', profileRoutes);
+
+app.use(errorHandler);
 
 //start server and connect to DB
 async function start() {
