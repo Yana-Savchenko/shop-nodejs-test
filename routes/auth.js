@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 
@@ -11,7 +10,6 @@ const resetPassEmail = require('../email/resetPass');
 const { regValidators, loginValidators } = require('../helpers/validators');
 
 const router = Router();
-dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
